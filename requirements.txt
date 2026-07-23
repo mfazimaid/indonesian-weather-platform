@@ -1,0 +1,17 @@
+pandas
+numpy
+requests
+sqlalchemy
+psycopg2-binary
+python-dotenv
+fastapi
+uvicorn
+streamlit
+plotly
+apscheduler
+black
+pytest
+pytest-mock
+ruff
+isort
+mypy

@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+
+# Environment
+.env
+
+# VSCode
+.vscode/
+
+# Data
+data/raw/
+data/archive/
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+
+# Ruff
+.ruff_cache/
+
+# Mypy
+.mypy_cache/
+
+# Coverage
+.coverage 
+htmlcov/
+
+# OS
+Thumbs.db
+
+# macOS
+.DS_Store
+

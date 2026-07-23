@@ -1,0 +1,242 @@
+import os
+import pandas as pd
+
+from etl.utils.database import get_connection
+from etl.utils.logger import logger
+
+class WeatherLoader:
+	def __init__(self, process_date):
+
+		self.process_date = process_date
+
+		self.csv_path = os.path.join(
+			"data",
+			"processed",
+			self.process_date,
+			"weather.csv"
+			)
+
+	def load_city_lookup(self):
+
+		logger.info("loading city lookup...")
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		cursor.execute("""
+			SELECT city_id, city_name
+			FROM dim_city
+		""")
+
+		rows = cursor.fetchall()
+
+		cursor.close()
+		conn.close()
+
+		city_lookup = {}
+
+		for row in rows:
+			city_lookup[row[1]] = row[0]
+
+		logger.info(
+			f"{len(city_lookup)} kota berhasil dimuat."
+		)
+		return city_lookup
+
+
+	def load_csv(self):
+
+		logger.info("membaca CSV")
+
+		df = pd.read_csv(self.csv_path)
+
+		logger.info(f"{len(df)} data ditemukan.")
+		return df
+
+
+	def get_city_id(self, city_name):
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		cursor.execute(
+			"""
+			SELECT city_id
+			FROM dim_city
+			WHERE city_name = %s
+			""",
+			(city_name,)
+		)
+		result = cursor.fetchone()
+
+		cursor.close()
+		conn.close()
+
+
+		if result:
+			return result[0]
+		return None
+
+	def get_date_id(self, full_date):
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		cursor.execute(
+			"""
+			SELECT date_id
+			FROM dim_date
+			WHERE full_date = %s
+			""",
+			(full_date,)
+		)
+		result = cursor.fetchone()
+
+		cursor.close()
+		conn.close()
+
+		if result:
+			return result[0]
+		return None
+
+	def weather_exists(self,city,date_id):
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		cursor.execute(
+			"""
+			SELECT 1
+			FROM fact_weather
+			WHERE city_id = %s
+			and date_id = %s
+			""",
+			(
+				city_id,
+				date_id
+			)
+		)
+		result = cursor.fetchone()
+
+		cursor.close()
+		conn.close()
+
+		return result is not None
+
+	def load_fact_weather(self):
+
+		dataframe = self.load_csv()
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		for _, row in dataframe.itterrows():
+			city_id = self.get_city_id(
+				row.city_name
+			)
+
+			full_date = row.datetime.split("T")[0]
+
+			date_id = self.get_date_id(
+				full_date
+			)
+
+			print(city_id)
+			print(date_id)
+
+		conn.commit()
+		cursor.clclose()
+		conn.close()
+
+	def load_fact(self):
+
+		logger.info("memulai proses load ke fact_weather.")
+		df = self.load_ccsv()
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		for _, row in df.iterrows():
+			city_id = self.get_city_id(
+				row.city_nname
+			)
+			full_date = row.datetime.split("T")[0]
+
+	def insert_fact_weather(self, row):
+
+		city_id = self.get_city_id(
+			row["city_name"]
+		)
+
+		date = row["datetime"].split("T")[0]
+		date_id = self.get_date_id(date)
+
+		if city_id is None:
+			logger.warning(
+				f"kota tidak ditemukan:{row['city_name']}"
+			)
+			return
+		if date_id is None:
+			logger.warning(
+				f"tanggal tidak ditemukan: {date}"
+			)
+			return
+
+		conn = get_connection()
+		cursor = conn.cursor()
+
+		cursor.execute(
+			"""
+			INSERT INTO fact_weather(
+				city_id,
+				date_id,
+				temperature,
+				humidity,
+				wind_speed,
+				wind_direction
+			)
+			VALUES
+			(
+				%s,
+				%s,
+				%s,
+				%s,
+				%s,
+				%s
+			)
+			""",
+			(
+				city_id,
+				date_id,
+				row["temperature"],
+				row["humidity"],
+				row["wind_speed"],
+				row["wind_direction"]
+			)
+		)
+		conn.commit()
+
+		cursor.close()
+		conn.close()
+
+		logger.info(
+			f"{row['city_name']} berhasil dimasukkan."
+		)
+
+	def load_all(self):
+
+		df = self.load_csv()
+		logger.info("memulai proses load...")
+
+		for _, row in df.iterrows():
+			self.insert_fact_weather(row)
+
+		logger.info("semua data berhasil dimasukkan.")
+
+if __name__ == "__main__":
+	loader = WeatherLoader(
+		process_date="2026-06-29"
+	)
+
+	city_lookup = loader.load_city_lookup()
+	print(city_lookup)

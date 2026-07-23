@@ -1,0 +1,253 @@
+import json
+import os
+
+from etl.utils.logger import logger
+
+class WeatherValidator:
+
+	def __init__(self, raw_path, report):
+
+		self.raw_path = raw_path
+		self.report = report
+		self.weather_data = []
+
+	def load_weather_files(self):
+
+		files = os.listdir(self.raw_path)
+
+		for file_name in files:
+			file_path = os.path.join(
+				self.raw_path,
+				file_name
+			)
+
+			try:
+				with open(file_path, "r") as file:
+					data = json.load(file)
+
+			except Exception:
+
+				self.report.add(
+					"JSON Validation",
+					"FAILED"
+				)
+
+				raise Exception(
+					f"{file_name} bukan JSON valid."
+				)
+
+			self.weather_data.append(
+				{
+					"filename": file_name,
+					"data": data
+				}
+			)
+
+		logger.info(
+			f"{len(self.weather_data)} data berhasil dimuat."
+		)
+
+		self.report.add(
+			"JSON Validation",
+			"PASS"
+		)
+
+	def validate_total_file(self, expected):
+
+		for weather in self.weather_data:
+			filename = weather["filename"]
+			data = weather["data"]
+
+			downloaded = len(files)
+
+			self.report.add(
+				"Expected File",
+				expected
+			)
+
+			self.report.add(
+				"Downloaded File",
+				downloaded
+			)
+			logger.info(f"{downloaded} file ditemukan.")
+
+			if downloaded != expected:
+
+				self.report.add(
+					"File Validation",
+					"FAILED"
+				)
+				raise Exception(
+					f"Expected {expected}, tetapi hanya mendapat {downloaded}"
+				)
+
+			self.report.add(
+				"File Validation",
+				"PASS"
+			)
+
+			logger.info("jumlah file valid.")
+
+	def validate_empty_file(self):
+
+		for weather in self.weather_data:
+			filename = weather["filename"]
+			data = weather["data"]
+
+			if len(data) == 0:
+				raise Exception(
+					f"{filename} kosong."
+				)
+
+			self.report.add(
+				"Empty File",
+				"PASS"
+			)
+
+			logger.info("semua file memilikii isi.")
+
+	def validate_schema(self):
+		for weather in self.weather_data:
+			filename = weather["filename"]
+			data = weather["data"]
+
+		required_fields = [
+			"temperature_2m",
+			"relative_humidity_2m",
+			"wind_speed_10m",
+			"wind_direction_10m"
+		]
+
+
+#			current = data["current"]
+
+		for field in required_fields:
+			if field not in weather:
+				self.report.add(
+					"Schema Validation",
+					"FAILED"
+				)
+
+				raise Exception(
+					f"{filename} kehilangan field{field}"
+				)
+			self.report.add(
+				"Schema Validation",
+				"PASS"
+			)
+
+			logger.info(
+				"Schema Validation berhasil."
+			)
+
+	def validate_temperature(self):
+		logger.info("validasi temperature...")
+
+		for weather in self.weather_data:
+			filename = weather["filename"]
+			data = weather["data"]
+
+			temperature = data["current"]["temperature_2m"]
+
+			if (
+				temperature < settings.MIN_TEMPERATURE
+				or
+				temperature > settings.MAX_TEMPERATURE
+			):
+
+				self.report.add(
+					"Temperature Validation",
+					"FAILED"
+				)
+
+				raise Exception(
+					f"{filename} temperature tidak valid: {temperature}"
+				)
+
+		self.report.add(
+			"Temperature Validation",
+			"PASS"
+		)
+		logger.info("Temperature valid.")
+
+	def validate_humidity(self):
+		logger.info("validasi humidity...")
+
+		for weather in self.weather_data:
+			filename = weather["filename"]
+			data = weather["data"]
+
+			humidity = data["current"]["relative_humidity_2m"]
+
+			if (
+				humidity < settings.MIN_HUMIDITY
+				or
+				humidity > settings.MAX_HUMIDITY
+			):
+
+				self.report.add(
+					"Humidity Validation",
+					"FAILED"
+				)
+
+				raise Exception(
+					f"{filename} humidity tidak valid: {humidity}"
+				)
+
+		self.report.add(
+			"Humidity Validation",
+			"PASS"
+		)
+		logger.info("Humidity valid.")
+
+	def validate_wind_speed(self):
+		logger.info("validasi wind speed...")
+
+		for weather in self.weather_data:
+			filename = weather["filename"]
+			data = weather["data"]
+
+			wind = data["current"]["wind_speed_10m"]
+
+			if (
+				wind < settings.MIN_WIND_SPEED
+				or
+				wind > settings.MAX_WIND_SPEED
+			):
+
+				self.report.add(
+					"Wind Speed Validation",
+					"FAILED"
+				)
+
+				raise Exception(
+					f"{file} Wind Speed tidak valid: {wind}"
+				)
+
+		self.report.add(
+			"Wind Speed Validation",
+			"PASS"
+		)
+		logger.info("Wind Speed valid.")
+
+	def validate_duplicate(self):
+		
+
+	def run(self, expected):
+
+		logger.info("*" * 60)
+		logger.info("Weather Validation Start")
+		logger.info("*" * 60)
+
+		self.validate_total_file(expected)
+		self.load_weather_files()
+		self.validate_empty_file()
+		self.validate_schema()
+		self.validate_temperature()
+		self.validate_humidity()
+		self.validate_duplicate()
+
+		logger.info("semua validasi berhasil.") 
+		logger.info("*" * 60)
+		logger.info("Weather Validation Finished.") 
+		logger.info("*" * 60)
