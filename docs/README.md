@@ -1,43 +1,40 @@
-# Indonesian Weather Platform
+Indonesian Weather Platform
 
-## Tech Stack
+An end-to-end Data Engineering project that collects weather data
+from Open-Meteo API, validates, transforms,
+and loads it into PostgreSQL Data Warehouse.
 
-- Python
-- PostgreSQL
-- Docker
-- FastAPI
-- Streamlit
-- SQLAlchemy
-- Pandas
+Features
+--------
 
----
+✔ ETL Pipeline
+✔ Data Validation
+✔ PostgreSQL Warehouse
+✔ Repository Pattern
+✔ Dependency Injection
+✔ Docker Ready
+✔ Ruff
+✔ Black
+✔ isort
+✔ mypy
+✔ pytest
+✔ pre-commit
 
-## Architecture
+Architecture
 
-Open Meteo API
-
-↓
-
-Python ETL
-
-↓
-
+API
+        │
+        ▼
+Extractor
+        │
+        ▼
+Validator
+        │
+        ▼
+Transformer
+        │
+        ▼
+Loader
+        │
+        ▼
 PostgreSQL
-
-↓
-
-FastAPI
-
-↓
-
-Dashboard
-
----
-
-## Project Status
-
-✅ Sprint 1 Database Design
-⬜ Sprint 2 ETL
-⬜ Sprint 3 FastAPI
-⬜ Sprint 4 Dashboard
-⬜ Sprint 5 Docker Production

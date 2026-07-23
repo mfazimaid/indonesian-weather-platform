@@ -9,7 +9,6 @@ from repositories.date_repository import DateRepository
 
 
 def create_pipeline():
-
     report = PipelineReport()
 
     city_repository = CityRepository()

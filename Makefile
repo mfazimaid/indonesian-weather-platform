@@ -15,9 +15,9 @@ pipeline:
 lint:
 	ruff check .
 
-
 format:
 	black .
+	isort .
 
 test:
 	PYTHONPATH=. python3 -m pytest 
@@ -32,3 +32,13 @@ type:
 		etl \
 		models \
 		repositories
+
+quality:
+	make lint
+	make format
+	make type
+	make test
+
+clean:
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete

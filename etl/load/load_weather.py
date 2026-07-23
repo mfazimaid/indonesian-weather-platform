@@ -9,7 +9,6 @@ from utils.logger import logger
 
 class WeatherLoader:
     def __init__(self, report, city_repository, date_repository, process_date=None):
-
         self.report = report
         self.city_repository = city_repository
         self.date_repository = date_repository
@@ -24,7 +23,6 @@ class WeatherLoader:
         )
 
     def load_csv(self):
-
         logger.info("membaca CSV")
 
         df = pd.read_csv(self.csv_path)
@@ -49,7 +47,6 @@ class WeatherLoader:
         return result is not None
 
     def load_fact_weather(self):
-
         logger.info("memulai load fact weather...")
 
         df = self.load_csv()
@@ -113,7 +110,6 @@ class WeatherLoader:
         logger.info("%s data ditemukan.", len(df))
 
     def run(self):
-
         logger.info("=" * 60)
         logger.info("Weather Load Start")
         logger.info(f"process date: {self.process_date}")

@@ -7,13 +7,11 @@ from etl.utils.logger import logger
 
 class WeatherValidator:
     def __init__(self, raw_path, report):
-
         self.raw_path = raw_path
         self.report = report
         self.weather_data = []
 
     def load_weather_files(self):
-
         files = os.listdir(self.raw_path)
 
         for file_name in files:
@@ -38,7 +36,6 @@ class WeatherValidator:
         self.report.add("JSON Validation", "PASS")
 
     def validate_total_file(self, expected):
-
         downloaded = len(self.weather_data)
 
         self.report.add("Expected File", expected)
@@ -55,7 +52,6 @@ class WeatherValidator:
         logger.info("jumlah file valid.")
 
     def validate_empty_file(self):
-
         for weather in self.weather_data:
             filename = weather["filename"]
             data = weather["data"]
@@ -182,7 +178,6 @@ class WeatherValidator:
         logger.info("Wind Direction valid.")
 
     def validate_duplicate(self):
-
         logger.info("validasi duplicate...")
 
         filenames = set()
@@ -202,7 +197,6 @@ class WeatherValidator:
         logger.info("duplicate tidak ditemukan.")
 
     def run(self, expected):
-
         logger.info("*" * 60)
         logger.info("Weather Validation Start")
         logger.info("*" * 60)

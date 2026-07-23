@@ -82,7 +82,6 @@ class WeatherTransformer:
         logger.info(f"CSV berjasil disimpan: {filename}")
 
     def run(self):
-
         logger.info("=" * 60)
         logger.info("Weather Transform Start")
         logger.info(f"Pprocess date: {self.process_date}")
